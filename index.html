@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watermark</title>
+  <script src="https://use.fontawesome.com/6364f396e2.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script src="js/dom-to-image.min.js"></script>
+  <script src="js/FileSaver.min.js"></script>
+  <link href="https://fonts.loli.net/css?family=Noto+Serif+SC|Noto+Sans+SC&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div id="app">
+    <div class="header">
+      <h1 class="logo"><i class="fa fa-picture-o logo icon" aria-hidden="true"></i> Watermark</h1>
+    </div>
+    <div class="main">
+      <div class="section">
+        <div class="view" v-if="!image">
+          <div ref="drag-area" class="drag-area" :class="{'drag-over': isDrag}" @click="$refs['file'].click()">
+            <span class="drag-title"><i class="fa fa-cloud-upload" aria-hidden="true"></i> <br />拖拽到此或粘贴上传</span>
+            <input type="file" ref="file" style="display: none;" @change="uploadHandle" accept="image/*" />
+          </div>
+        </div>
+        <div class="water" v-else>
+          <div id="result" class="mark-box">
+            <img :src="image" />
+            <span class="mark" v-if="repeat">
+              <span :style="{
+                position: 'absolute',
+                top: `${position.y}%`,
+                left: `${position.x}%`,
+              }">
+                <span class="mark-text" v-for="(_, i) in Array(1000).fill(0)" :key="i" :style="textStyle">
+                  {{text}}
+                </span>
+              </span>
+            </span>
+            <span v-else class="mark" style="width: 100%; height: 100%;top:0;right:0">
+              <span :style="{
+                position: 'absolute',
+                top: `${position.y * 3}%`,
+                left: `${position.x * 3}%`,
+              }">
+                <span class="mark-text" :style="textStyle">
+                  {{text}}
+                </span>
+              </span>
+            </span>
+          </div>
+          <div class="control">
+            <div class="control-item">
+              <label for="repeat">重复</label>
+              <input type="checkbox" id="repeat" v-model="repeat" />
+            </div>
+            <div class="control-item">
+              <label for="text">文字</label>
+              <input type="text" id="text" v-model="text" class="ui-input" />
+            </div>
+            <div class="control-item">
+              <label for="weight">加粗</label>
+              <input type="checkbox" id="weight" v-model="style.fontWeight" />
+            </div>
+            <div class="control-item">
+              <label for="size">字号</label>
+              <input type="number" id="size" min="12" v-model="style.fontSize" />
+            </div>
+            <div class="control-item">
+              <label for="color">颜色</label>
+              <input type="color" :value="style.color" v-model="style.color" />
+            </div>
+            <div class="control-item">
+              <label for="position">位置 X</label>
+              <input type="range" id="position" min="-30" max="30" step="0.01" v-model="position.x" />
+            </div>
+            <div class="control-item">
+              <label for="position">位置 Y</label>
+              <input type="range" id="position" min="-30" max="30" step="0.01" v-model="position.y" />
+            </div>
+            <div class="control-item">
+              <label for="opacity">透明度</label>
+              <input type="range" id="opacity" step="0.01" min="0.01" max="1" v-model="style.opacity" />
+            </div>
+            <div class="control-item">
+              <label for="rotate">旋转</label>
+              <input type="range" id="rotate" v-model="angle" />
+            </div>
+            <div class="control-item">
+              <button id="download" @click="download"><i class="fa fa-download icon" aria-hidden="true"></i> 下载</button>
+              <button @click="image=''"><i class="fa fa-refresh icon" aria-hidden="true"></i> 重选</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
